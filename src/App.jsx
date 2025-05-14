@@ -3,6 +3,7 @@ import './App.css';
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Login from './Components/Login';
 import Header from './Components/Header';
+import Home from "./Components/Home";
 
 
 const App = () => {
@@ -22,6 +23,7 @@ export const appRouter = createBrowserRouter([
     errorElement: <Error />,
     children: [
       { path: "/", element: <Login /> },
+      {path: "/home", element: <Home />},
     ],
   },
 ]);

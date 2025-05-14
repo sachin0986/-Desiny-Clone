@@ -1,22 +1,59 @@
 import React from "react"
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { auth, provider } from "../Database/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
+import { selectUserName, selectUserEmail, selectUserPhoto, setUserLoginDetails } from "../features/users/userSlice";
+
 
 const Header = (props) => {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userName = useSelector(selectUserName);
+  const userEmail = useSelector(selectUserEmail);
+  const userPhoto = useSelector(selectUserPhoto);
+
+  const handleAuth = () => {
+    auth.signInWithPopup(provider).then((result) => {
+      setUser(result.user);
+    }).catch((error) => {
+      alert(error.message);
+    });
+  }
+  const setUser = (user) => {
+    dispatch(setUserLoginDetails({
+      name: user.displayName,
+      email: user.email,
+      photo: user.photoURL,
+    }))
+  }
+
     return(
         <Nav>
             <Logo>
                 <Link to="/"><img src="/images/logo.svg" alt="desing+" /></Link>
             </Logo>
-            <NavMenu>
+
+          {
+            !userName ? <LoginButton onClick={handleAuth}>LOGIN</LoginButton> : 
+          <>
+
+              <NavMenu>
                 <Link to="/home"><img src="/images/home-icon.svg" alt="home_icon" /><span>HOME</span></Link>
-                <Link to="/home"><img src="/images/search-icon.svg" alt="home_icon" /><span>SEARCH</span></Link>
-                <Link to="/home"><img src="/images/watchlist-icon.svg" alt="home_icon" /><span>WATCHLIST</span></Link>
-                <Link to="/home"><img src="/images/original-icon.svg" alt="home_icon" /><span>ORIGINALS</span></Link>
-                <Link to="/home"><img src="/images/movie-icon.svg" alt="home_icon" /><span>MOVIES</span></Link>
-                <Link to="/home"><img src="/images/series-icon.svg" alt="home_icon" /><span>SERIES</span></Link>
-            </NavMenu>
-            <LoginButton>LOGIN</LoginButton>
+                <Link to="/"><img src="/images/search-icon.svg" alt="home_icon" /><span>SEARCH</span></Link>
+                <Link to="/"><img src="/images/watchlist-icon.svg" alt="home_icon" /><span>WATCHLIST</span></Link>
+                <Link to="/"><img src="/images/original-icon.svg" alt="home_icon" /><span>ORIGINALS</span></Link>
+                <Link to="/"><img src="/images/movie-icon.svg" alt="home_icon" /><span>MOVIES</span></Link>
+                <Link to="/"><img src="/images/series-icon.svg" alt="home_icon" /><span>SERIES</span></Link>
+              </NavMenu>
+                    
+                <UserImg src={userPhoto} alt={userName} />
+                  
+ 
+          </>
+      }
         </Nav>
     )
 }
@@ -130,5 +167,10 @@ const NavMenu = styled.div`
   }
 `;
 
+const UserImg = styled.img`
+  height: 70%;
+  margin: 8px;
+  border-radius: 80px;
+`;
 
 export default Header;
