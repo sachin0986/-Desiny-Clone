@@ -16,7 +16,7 @@ const userSlice = createSlice({
             state.photo = action.payload.photo;
         },
 
-        signOutState: state => {
+        setSignOutState: state => {
             state.name = null;
             state.email = null;
             state.photo = null;
@@ -25,7 +25,7 @@ const userSlice = createSlice({
 });
 
 
-export const {signOutState, setUserLoginDetails} = userSlice.actions;
+export const {setSignOutState, setUserLoginDetails} = userSlice.actions;
 export const selectUserName = (state) => state.user.name;
 export const selectUserEmail = (state) => state.user.email;
 export const selectUserPhoto = (state) => state.user.photo;

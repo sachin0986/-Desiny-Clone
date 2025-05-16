@@ -1,10 +1,11 @@
+import { useEffect } from "react";
 import React from "react"
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { auth, provider } from "../Database/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
-import { selectUserName, selectUserEmail, selectUserPhoto, setUserLoginDetails } from "../features/users/userSlice";
+import { selectUserName, selectUserEmail, selectUserPhoto, setUserLoginDetails, setSignOutState } from "../features/users/userSlice";
 
 
 const Header = (props) => {
@@ -15,13 +16,31 @@ const Header = (props) => {
   const userEmail = useSelector(selectUserEmail);
   const userPhoto = useSelector(selectUserPhoto);
 
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if(user) {
+        setUser(user);
+        navigate("/home");
+      }
+    })
+  })
+
   const handleAuth = () => {
-    auth.signInWithPopup(provider).then((result) => {
-      setUser(result.user);
-    }).catch((error) => {
-      alert(error.message);
-    });
-  }
+      if(!userName) {
+        auth.signInWithPopup(provider).then((result) => {
+          setUser(result.user);
+        }).catch((error) => {
+          alert(error.message);
+        });
+      } else if (userName) {
+        auth.signOut().then(() => {
+          dispatch(setSignOutState())
+          navigate("/");
+        }).catch((error) => {
+          alert(error.message);
+        })
+      }
+      }
   const setUser = (user) => {
     dispatch(setUserLoginDetails({
       name: user.displayName,
@@ -33,7 +52,7 @@ const Header = (props) => {
     return(
         <Nav>
             <Logo>
-                <Link to="/"><img src="/images/logo.svg" alt="desing+" /></Link>
+                <Link to="/home"><img src="/images/logo.svg" alt="desing+" /></Link>
             </Logo>
 
           {
@@ -48,8 +67,12 @@ const Header = (props) => {
                 <Link to="/"><img src="/images/movie-icon.svg" alt="home_icon" /><span>MOVIES</span></Link>
                 <Link to="/"><img src="/images/series-icon.svg" alt="home_icon" /><span>SERIES</span></Link>
               </NavMenu>
-                    
-                <UserImg src={userPhoto} alt={userName} />
+                    <SignOut>
+                      <UserImg src={userPhoto} alt={userName} />
+                      <Dropdown>
+                          <span onClick={handleAuth}>Sign Out</span>
+                      </Dropdown>
+                    </SignOut>
                   
  
           </>
@@ -168,9 +191,48 @@ const NavMenu = styled.div`
 `;
 
 const UserImg = styled.img`
-  height: 70%;
-  margin: 8px;
-  border-radius: 80px;
+  
+`;
+
+
+const Dropdown = styled.div`
+  position: absolute;
+  backkground-colour: rgb(19 19 19);
+  border: 1px solid rgba(151 151 151 0.34);
+  top: 48px;
+  right: 0px;
+  border-radius: 4px;
+  boox-shadow: rgb(0 0 0 / 50%) 0px 0px 18px 0px;
+  padding: 10px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  width: 100px;
+  opacity: 0;
+
+`;
+
+const SignOut = styled.div`
+  position: relative;
+  heignt: 48px;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  ${UserImg} {
+     height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  }
+
+  &:hover {
+    ${Dropdown} {
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
+
 `;
 
 export default Header;
