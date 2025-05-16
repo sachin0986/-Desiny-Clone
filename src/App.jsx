@@ -4,6 +4,7 @@ import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Login from './Components/Login';
 import Header from './Components/Header';
 import Home from "./Components/Home";
+import Detail from './Components/Detail';
 
 
 const App = () => {
@@ -24,6 +25,7 @@ export const appRouter = createBrowserRouter([
     children: [
       { path: "/", element: <Login /> },
       {path: "/home", element: <Home />},
+      {path: "/detail/:id", element: <Detail />},
     ],
   },
 ]);

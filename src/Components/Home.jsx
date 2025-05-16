@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ImgSlider from "./ImageSlider";
+import ImageSlider from "./ImageSlider";
 import NewDisney from "./NewDesiny";
 import Originals from "./Originals";
 import Recommends from "./Recomends";
@@ -20,29 +20,31 @@ const Home = (props) => {
   let trending = [];
 
   useEffect(() => {
-    console.log("hello");
-    db.collection("movies").onSnapshot((snapshot) => {
-      snapshot.docs.map((doc) => {
-        console.log(recommends);
+    const unsubscribe = db.collection("movies").onSnapshot((snapshot) => {
+      const recommends = [];
+      const newDisneys = [];
+      const originals = [];
+      const trending = [];
+  
+      snapshot.docs.forEach((doc) => {
+        const data = { id: doc.id, ...doc.data() };
+  
         switch (doc.data().type) {
           case "recommend":
-            recommends = [...recommends, { id: doc.id, ...doc.data() }];
+            recommends.push(data);
             break;
-
           case "new":
-            newDisneys = [...newDisneys, { id: doc.id, ...doc.data() }];
+            newDisneys.push(data);
             break;
-
           case "original":
-            originals = [...originals, { id: doc.id, ...doc.data() }];
+            originals.push(data);
             break;
-
           case "trending":
-            trending = [...trending, { id: doc.id, ...doc.data() }];
+            trending.push(data);
             break;
         }
       });
-
+  
       dispatch(
         setMovies({
           recommend: recommends,
@@ -52,11 +54,13 @@ const Home = (props) => {
         })
       );
     });
+  
+    return () => unsubscribe(); // ✅ Cleanup listener on unmount
   }, [userName]);
 
   return (
     <Container>
-      <ImgSlider />
+      <ImageSlider />
       <Viewers />
       <Recommends />
       <NewDisney />
@@ -68,18 +72,21 @@ const Home = (props) => {
 
 const Container = styled.main`
   position: relative;
-  min-height: calc(100vh - 250px);
+  min-height: 100vh;
+  width: 100%;
   overflow-x: hidden;
   display: block;
   top: 72px;
   padding: 0 calc(3.5vw + 5px);
 
   &:after {
-    background: url("/images/home-background.png") center center / cover
-      no-repeat fixed;
+    background: url("/images/home-background.png") center center / cover no-repeat;
     content: "";
     position: absolute;
-    inset: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     opacity: 1;
     z-index: -1;
   }
