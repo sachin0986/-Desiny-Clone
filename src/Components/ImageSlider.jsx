@@ -42,7 +42,9 @@ const ImgSlider = (props) => {
 };
 
 const Carousel = styled(Slider)`
-  margin-top: 20px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 
   & > button {
     opacity: 0;
@@ -68,7 +70,7 @@ const Carousel = styled(Slider)`
   }
 
   .slick-list {
-    overflow: initial;
+    overflow: visible;
   }
 
   .slick-prev {
@@ -78,12 +80,21 @@ const Carousel = styled(Slider)`
   .slick-next {
     right: -75px;
   }
+
+  .slick-dots {
+    bottom: -25px;
+  }
 `;
 
 const Wrap = styled.div`
   border-radius: 4px;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
+  box-shadow: rgb(0 0 0 / 69%) 0px 26px 30px -10px,
+    rgb(0 0 0 / 73%) 0px 16px 10px -10px;
+  transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s;
+  border: 3px solid rgba(249, 249, 249, 0.1);
 
   a {
     border-radius: 4px;
@@ -97,6 +108,8 @@ const Wrap = styled.div`
     img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
     }
 
     &:hover {
